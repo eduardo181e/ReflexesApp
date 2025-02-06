@@ -1,118 +1,64 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { PixelRatio } from 'react-native';
+import SelectConvBox from './components/box/makeCombo/SelectConvBox';
+import PlayCombBox from './components/box/playCombo/PlayCombBox';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ListStoredItems from './components/box/listComb/ListComb';
+import SelectConvCustom from './components/custom/makeCombo/SelectConvCustom';
+import ListStoredItemsCustom from './components/custom/listComb/LisrCombCustom';
+import PlayCombCustom from './components/custom/playCombo/PlayCombCustom';
+import MainMenu from './components/main/MainMenu';
+import SelectConvCustomEdit from './components/custom/editCombo/SelectConvCustomEdit';
+import SelectConvBoxEdit from './components/box/editCombo/SelectConvBox';
+import Settings from './components/settings/Setings';
+import { LanguageContext, LanguageProvider } from './contexts/LanguageContext';
+import { ThemeContext, ThemeProvider } from './contexts/ThemeContext';
+import { darkTheme, lightTheme } from './contexts/Styles';
+import { useContext } from 'react';
+import translations from './contexts/translations';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createNativeStackNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+export default function App() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function AppContent() {
+  const { language } = useContext(LanguageContext); // Ahora seguro
+  const { theme } = useContext(ThemeContext);
+  const trans = translations[language].title
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: { backgroundColor: theme === 'Light' ? '#fff' : '#333' }, // Fondo del encabezado
+          headerTintColor: theme === 'Light' ? '#333' : '#fff', // Color del texto del título
+          headerTitleStyle: { fontWeight: 'bold', fontSize: 18 }, // Estilo del título
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          component={MainMenu}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="ListCustom" component={ListStoredItemsCustom} options={{ title: trans.custom }} />
+        <Stack.Screen name="ListBox" component={ListStoredItems} options={{ title: trans.box }} />
+        <Stack.Screen name="selectCustom" component={SelectConvCustom} options={{ title: trans.create }} />
+        <Stack.Screen name="editCustom" component={SelectConvCustomEdit} options={{ title: trans.edit }} />
+        <Stack.Screen name="editBox" component={SelectConvBoxEdit} options={{ title: trans.edit }} />
+        <Stack.Screen name="selectBox" component={SelectConvBox} options={{ title: trans.create }} />
+        <Stack.Screen name="PlayBox" component={PlayCombBox} options={{ title: trans.play }} />
+        <Stack.Screen name="PlayCustom" component={PlayCombCustom} options={{ title: trans.play }} />
+        <Stack.Screen name="Settings" component={Settings} options={{ title: trans.settings }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
